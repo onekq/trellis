@@ -37,7 +37,6 @@ export const LoginPage: React.FC<MyLoginPageProps> = ({ backgroundImage }) => {
         <Root style={{ backgroundImage: `url(${backgroundImage})` }}>
             <Card className={classes.card}>
                 {<LoginForm />}
-                <Button>{'Sign In'}</Button>
             </Card>
         </Root>
     );

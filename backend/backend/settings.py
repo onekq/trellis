@@ -173,5 +173,3 @@ CORS_ALLOW_METHODS = [
 ]
 
 CORS_EXPOSE_HEADERS = ['Content-Range']
-
-APPEND_SLASH = True

@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "next": "14.2.3",
+    "ra-data-simple-rest": "^4.16.17",
     "react": "^18",
+    "react-admin": "^4.16.18",
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18"
   },

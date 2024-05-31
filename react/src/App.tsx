@@ -7,8 +7,9 @@ import TaskCreate from './components/TaskCreate';
 import TaskShow from './components/TaskShow';
 import { LoginPage } from './auth/LoginPage';
 import authProvider from './authProvider';
-import dataProvider from './dataProvider';
+import simpleRestProvider from 'ra-data-simple-rest';
 
+const dataProvider = simpleRestProvider('http://localhost:8000/api');
 const App: React.FC = () => {
     return (
         <Admin loginPage={LoginPage} dataProvider={dataProvider} authProvider={authProvider}>
