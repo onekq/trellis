@@ -1,28 +1,24 @@
-from rest_framework import serializers
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User
+from rest_framework import serializers
 from .models import Task
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        username = data.get('username')
+        password = data.get('password')
+        user = authenticate(username=username, password=password)
+        if user and user.is_active:
+            return user
+        raise serializers.ValidationError("Invalid credentials")
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username',)
-
-class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
-
-    def validate(self, data):
-        username = data.get("username")
-        password = data.get("password")
-        user = authenticate(username=username, password=password)
-        if user and user.is_active:
-            return {
-                'username': user.username,
-                'tokens': RefreshToken.for_user(user).access_token
-            }
-        raise serializers.ValidationError("Invalid Credentials")
+        fields = ['id', 'username', 'email', 'first_name', 'last_name']
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:

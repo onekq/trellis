@@ -1,32 +1,42 @@
 import React from 'react';
-import { Create, SimpleForm, TextInput, useNotify, useRedirect, useGetIdentity, required } from 'react-admin';
+import { Create, SimpleForm, TextInput, useNotify, useRedirect, useGetIdentity, useCreate, required } from 'react-admin';
 
-interface TaskFormValues {
+interface Task {
     title: string;
     owner: string;
     description: string;
-    author?: string;
-    stage?: string;
+    author: string;
+    stage: string;
 }
 
-const TaskCreate = (props:any) => {
+const TaskCreate = (props: any) => {
     const notify = useNotify();
     const redirect = useRedirect();
     const { identity, isLoading } = useGetIdentity();
+    const [create] = useCreate();
 
     if (isLoading) return null;
 
-    const handleSave = (values: TaskFormValues) => {
-        // Set the author to the current user's id
-        if (identity && identity.id) {
-            values.author = identity.id;
+    const handleSave = async (values: Task) => {
+        try {
+            // Set the author to the current user's full name
+            if (identity && identity.fullName) {
+                values.author = identity.fullName;
+            }
+            values.stage = 'TODO';
+
+            // Perform the creation
+            await create('tasks', { data: values });
+            notify('Task created successfully', { type: 'info' });
+            redirect('list', 'tasks');
+        } catch (error) {
+            notify(`Error: ${error}`, { type: 'warning' });
         }
-        return values;
     };
 
     return (
         <Create {...props}>
-            <SimpleForm defaultValue={{ stage: 'TODO' }} onSubmit={handleSave}>
+            <SimpleForm onSubmit={handleSave}>
                 <TextInput source="title" label="Title" validate={required()} />
                 <TextInput source="owner" label="Owner" validate={required()} />
                 <TextInput source="description" label="Description" multiline validate={required()} />

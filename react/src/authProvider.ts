@@ -1,58 +1,69 @@
-import { fetchUtils, AuthProvider } from 'react-admin';
+import { AuthProvider } from 'react-admin';
 
 const apiUrl = 'http://localhost:8000/api';
-const TOKEN_KEY = 'token';
-const REFRESH_TOKEN_KEY = 'refreshToken';
-const ROLE_KEY = 'role';
-
-interface LoginResponse {
-    access: string;
-    refresh: string;
-    user: {
-        role: string;
-    };
-}
 
 const authProvider: AuthProvider = {
-    login: async ({ username, password }) => {
-        const request = new Request(`${apiUrl}/login/`, {
+    login: ({ username, password }) => {
+        return fetch(`${apiUrl}/login/`, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({ username, password }),
-            headers: new Headers({ 'Content-Type': 'application/json' }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response.json();
+        })
+        .then(({ access, refresh, user }) => {
+            localStorage.setItem('token', access);
+            localStorage.setItem('refreshToken', refresh);
+            localStorage.setItem('user', JSON.stringify(user));
+        })
+        .catch((error) => {
+            throw new Error('Network error: ' + error.message);
         });
-
-        try {
-            const { json } = await fetchUtils.fetchJson(request) as { json: LoginResponse };
-            localStorage.setItem(TOKEN_KEY, json.access);
-            localStorage.setItem(REFRESH_TOKEN_KEY, json.refresh);
-            localStorage.setItem(ROLE_KEY, json.user.role); // Assuming user role is returned in the response
-        } catch (error: any) {
-            throw new Error(error.message || 'Network error');
-        }
     },
+
     logout: () => {
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
-        localStorage.removeItem(ROLE_KEY);
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
         return Promise.resolve();
     },
+
     checkAuth: () => {
-        return localStorage.getItem(TOKEN_KEY) ? Promise.resolve() : Promise.reject();
+        return localStorage.getItem('token') ? Promise.resolve() : Promise.reject();
     },
+
     checkError: (error) => {
         const status = error.status;
         if (status === 401 || status === 403) {
-            localStorage.removeItem(TOKEN_KEY);
-            localStorage.removeItem(REFRESH_TOKEN_KEY);
-            localStorage.removeItem(ROLE_KEY);
+            localStorage.removeItem('token');
             return Promise.reject();
         }
         return Promise.resolve();
     },
+
     getPermissions: () => {
-        const role = localStorage.getItem(ROLE_KEY);
-        return role ? Promise.resolve(role) : Promise.reject();
-    }
+        const user = localStorage.getItem('user');
+        if (user) {
+            const { role } = JSON.parse(user);
+            return Promise.resolve(role);
+        }
+        return Promise.reject();
+    },
+
+    getIdentity: () => {
+        try {
+            const { id, username, avatar } = JSON.parse(localStorage.getItem('user') || '{}');
+            return Promise.resolve({ id, fullName: username, avatar });
+        } catch (error) {
+            return Promise.reject(error);
+        }
+    },
 };
 
 export default authProvider;

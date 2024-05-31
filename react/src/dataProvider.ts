@@ -8,7 +8,7 @@ interface HttpResponse {
     statusText: string;
     headers: Headers;
     body: string;
-    json: any; // Make json property non-optional
+    json: any;
 }
 
 const httpClient = (url: string, options: fetchUtils.Options = {}): Promise<HttpResponse> => {
@@ -24,6 +24,6 @@ const httpClient = (url: string, options: fetchUtils.Options = {}): Promise<Http
     return fetchUtils.fetchJson(url, options) as Promise<HttpResponse>;
 };
 
-const dataProvider: DataProvider = simpleRestProvider(apiUrl, httpClient as any);
+const dataProvider: DataProvider = simpleRestProvider(apiUrl, httpClient);
 
 export default dataProvider;
