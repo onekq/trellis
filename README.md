@@ -9,7 +9,7 @@ Then run Django
 
 ```python manage.py runserver```
 
-Log into the admin site as admin (username is ```admin, password is ```12345678```), create a few new users.
+Log into the admin site (username is ```admin```, password is ```12345678```), create a few new users.
 
 ## Frontend
 Enter the ```react``` directory, install packages as below.
