@@ -7,5 +7,5 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('user/', UserDetailView.as_view(), name='user_detail'),
     path('tasks', TaskViewSet.as_view({'post': 'create', 'get': 'list'})),
-    path('tasks/<int:pk>', TaskViewSet.as_view({'put': 'update', 'get': 'retrieve'})),
+    path('tasks/<int:pk>', TaskViewSet.as_view({'put': 'update', 'get': 'retrieve', 'delete': 'destroy'})),
 ]

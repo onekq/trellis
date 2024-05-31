@@ -1,5 +1,5 @@
 import React from 'react';
-import { Show, SimpleShowLayout, TextField } from 'react-admin';
+import { Show, SimpleShowLayout, TextField, DeleteButton } from 'react-admin';
 
 const TaskShow = (props:any) => (
     <Show {...props}>
@@ -10,6 +10,7 @@ const TaskShow = (props:any) => (
             <TextField source="author" label="Author" />
             <TextField source="owner" label="Owner" />
             <TextField source="description" label="Description" />
+            <DeleteButton />
         </SimpleShowLayout>
     </Show>
 );
